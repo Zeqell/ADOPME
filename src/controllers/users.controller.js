@@ -9,10 +9,14 @@ const createUser = async(req, res, next)=>{
         if(!first_name || !last_name || !email || !password){
             throw CustomError.createError({
                 name: "New user, data massing",
-                cause: gerenateInfoError({first_name, last_name, email,password}),
+                cause: gerenateInfoError({first_name, last_name, email, password}),
                 message: "Error when trying to create user",
                 code: EErrors.INVALID_TYPE
             })
+        }    
+        const existingUser = await userService.getUserByEmail(email)
+        if(existingUser){
+            return res.status(400).send("Este Email ya se escuentra registrado")
         }
         const newUser = await userService.createUser({
             first_name,
@@ -20,9 +24,9 @@ const createUser = async(req, res, next)=>{
             email, 
             password
         })
-        console.log(newUser);
-        res.send({status:"success", payload: newUser})
+        res.status(201).send({status: "success", message:"Usuario creado exitosamente", payload: newUser})
     } catch (error) {
+        console.log("error interno del servidor", error);
         next(error)
     }
 } 
