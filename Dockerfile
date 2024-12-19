@@ -1,7 +1,7 @@
 FROM node
-#Definimos una imagrn base: NODE. esto lo toma del docker hub
+#Definimos una imagen base: NODE. esto lo toma del docker hub
 WORKDIR /app
-#Aca estamos creando una carpeta interna donde guardar nuestro p´royecto
+#Aca estamos creando una carpeta interna donde guardar nuestro proyecto
 COPY package.json .
 #Etamos copiando el package.json a mi nueva carpeta
 RUN npm install

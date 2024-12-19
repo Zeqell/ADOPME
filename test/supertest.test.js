@@ -7,9 +7,9 @@ describe("Testing de la app Adoptme", ()=>{
   describe("Testing de pets", ()=>{
     it("El endpoint POST /api/pets debe crear una mascota correctamente", async ()=>{
       const petsMock={
-        name: "jack",
+        name: "tia",
         specie: "perro",
-        birthDate: "2022-04-10"
+        birthDate: "2021-06-10"
       }
       const {statusCode, ok, _body} = await requester.post("/api/pets").send(petsMock)
       console.log(statusCode);
@@ -21,9 +21,9 @@ describe("Testing de la app Adoptme", ()=>{
 
     it("Al crear una mascota, debe tener la propiedad adopted en false", async()=>{
       const newPets ={
-        name: "reck",
+        name: "clear",
         specie: "perro",
-        birthDate: "2022-04-04"
+        birthDate: "2023-04-04"
       }
       const{statusCode, _body} = await requester.post("/api/pets").send(newPets)
       expect(statusCode).to.equal(200)
@@ -52,8 +52,8 @@ describe("Testing de la app Adoptme", ()=>{
       const  idPets = "6748df435851d02652ef01af"
 
       const datosActu ={
-        name: "Nanami",
-        specie: "Dog"
+        name: "Nami",
+        specie: "perro"
       }
 
       const {statusCode} = await requester.put(`/api/pets/${idPets}`).send(datosActu)
@@ -76,14 +76,14 @@ describe("Testing de la app Adoptme", ()=>{
     })
   })
 
-  describe("Test avanzado", ()=>{
+  describe("Test avanzado Users", ()=>{
     let cookie;
 
     it("Debe registrar correctamente un usuario", async ()=>{
       const mockUser = {
         first_name: "Pepe",
         last_name: "Argento",
-        email: "pepe@argento.com",
+        email: "pepe@argento2024.com",
         password: "1324"
       }
       const {_body} = await requester.post("/api/sessions/register").send(mockUser)
@@ -93,7 +93,7 @@ describe("Testing de la app Adoptme", ()=>{
 
     it("Debe loguear correctamente al ususario y recuperar la cookie", async ()=>{
       const mockUser = {
-        email:"pepe@argento.com",
+        email:"pepe@argento2024.com",
         password:"1324"
       }
       const result = await requester.post("/api/sessions/login").send(mockUser)
@@ -114,7 +114,7 @@ describe("Testing de la app Adoptme", ()=>{
     it("Debe enviar la cookie que contiene el usuario", async ()=>{
       const {_body} = await requester.get("/api/sessions/current").set("Cookie", [`${cookie.name}=${cookie.value}`])
 
-      expect(_body.payload.email).to.be.eql("pepe@argento.com")
+      expect(_body.payload.email).to.be.eql("pepe@argento2024.com")
     })
   })
 
@@ -135,6 +135,41 @@ describe("Testing de la app Adoptme", ()=>{
 
       expect(result._body.payload).to.have.property("_id")
       expect(result._body.payload.image).to.be.ok
+    })
+  })
+
+  describe("Router de Adoptions", ()=>{
+    it("Debe retornar una lista de adoptions", async ()=>{
+      const {status} = await requester.get("/api/adoptions")
+
+      expect(status).to.equal(200)
+    })
+    it("Retorna 404 si la ruta no existe", async ()=>{
+      const {status} = await requester.get("/adoptions/noexiste")
+
+      expect(status).to.equal(404)
+    })
+
+    it("Retorna datos de una adoptions por ID", async ()=>{
+      let aid = "674f07e5e1bacafc2dc834df"
+
+      const {status} = await requester.get(`/api/adoptions/${aid}`)
+
+      expect(status).to.equal(200)
+    })
+    it("Retorna 404 si la adoptions no existe", async ()=>{
+      let noExistAid = "674f07e5e1bacafc2dc835df"
+      const {status} = await requester.get(`/api/adoptions/${noExistAid}`)
+
+      expect(status).to.equal(404)
+    })
+    it("Creamos un adoptions", async ()=>{
+      let uid = "6748e150e1a7cc433d90059d"
+      let pid = "6748df435851d02652ef01b0"
+
+      const {status} = await requester.post(`/api/adoptions/${uid}/${pid}`)
+
+      expect(status).to.equal(200)
     })
   })
 })
